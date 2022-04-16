@@ -31,33 +31,34 @@ class TextToSpeechDriver {
         return sdk.AudioConfig.fromAudioFileOutput(audioFilePath);
     }
 
-    createSpeechSynthesizer(speechConfig, audioConfig) {
-        return new sdk.SpeechSynthesizer(speechConfig, audioConfig);
+    createSpeechSynthesizer(outputMode, speechConfig, audioConfig) {
+        return outputMode === this.OUTPUT_MODE.file
+                ? new sdk.SpeechSynthesizer(speechConfig, audioConfig)
+                : new sdk.SpeechSynthesizer(speechConfig);
     }
 
-    async ttsFromPayload({ outputMode, synthesisVoice, audioFilePath, text }) {
-        if (!text) throw new Error('msg.payload must not be empty if input mode is "payload"');
-
+    async performTts({ outputMode, synthesisVoice, audioFilePath, text }) {
         // Check output mode = file restriction
         if (outputMode === this.OUTPUT_MODE.file) {
             if (!audioFilePath || !path.isAbsolute(audioFilePath)) throw new Error('Audio file path must be a string of an absolute path to local file system');
             if (!path.extname(audioFilePath)) throw new Error('Audio file path must contain a valid file name with extension');
         }
-
         // Currently support en-US only
         const synthesisLanguage = 'en-US';
         const speechConfig = this.createSpeechConfig(synthesisLanguage, synthesisVoice);
         const audioConfig = this.createAudioConfig(audioFilePath);
-
-        const synthesizer = this.createSpeechSynthesizer(speechConfig, audioConfig);
+        const synthesizer = this.createSpeechSynthesizer(outputMode, speechConfig, audioConfig);
 
         return new Promise((resolve, reject) => {
             synthesizer.speakTextAsync(text, (result) => {
-                const { reason, errorDetails } = result;
+                const { reason, errorDetails, audioData } = result;
                 synthesizer.close();
 
                 if (reason !== sdk.ResultReason.SynthesizingAudioCompleted) reject(`TTS is cancelled with ${errorDetails}`);
-                resolve(`TTS succeeded`);
+
+                // Convert ArrayBuffer to Buffer using uint8 to interpret the ArrayBuffer
+                if (outputMode === this.OUTPUT_MODE.file) resolve(`TTS succeeded`);
+                else resolve(Buffer.from(new Uint8Array(audioData)));
             }, (err) => {
                 this.#node.warn(err);
                 synthesizer.close();
@@ -66,8 +67,14 @@ class TextToSpeechDriver {
         });
     }
 
-    async ttsFromFile({ synthesisVoice, audioFilePath, text }) {
+    async ttsFromPayload(options) {
+        if (!options.text) throw new Error('msg.payload must not be empty if input mode is "payload"');
+        return this.performTts(options);
+    }
 
+    async ttsFromFile(options) {
+        if (!options.textFilePath || !path.isAbsolute(options.textFilePath)) throw new Error('Text file path must be a string of an absolute path to local file system');
+        return this.performTts(options);
     }
 
    async run(options) {
@@ -75,7 +82,7 @@ class TextToSpeechDriver {
             if (options.inputMode === this.INPUT_MODE.payload) {
                 return await this.ttsFromPayload(options);
             }
-            return await this.ttsFromPayload(options);
+            return await this.ttsFromFile(options);
         } catch (e) {
             throw e;
         }

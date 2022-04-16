@@ -6,7 +6,6 @@ module.exports = function(RED) {
         const textToSpeechDriver = new TextToSpeechDriver(this, this.credentials.key, this.credentials.region);
         this.on('input', async (msg) => {
             try {
-                console.log(config.synthesisVoice);
                 const options = {
                     textFilePath: config.textFilePath,
                     audioFilePath: config.audioFilePath,
