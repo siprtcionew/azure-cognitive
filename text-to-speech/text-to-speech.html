@@ -1,30 +1,20 @@
 <script type="text/javascript">
-    const INPUT_MODE = {
-        'file': '1',
-        'payload': '2',
-    };
-
-    const OUTPUT_MODE = {
-        'file': '1',
-        'payload': '2',
-    };
-
     RED.nodes.registerType('text-to-speech',{
         category: 'Azure Cognitive Services',
         color: '#88c9d3 ',
         defaults: {
             name: { value: ''  },
-            inputMode: { value: INPUT_MODE.payload, required: true },
-            outputMode: { value: OUTPUT_MODE.file, required: true },
+            inputMode: { value: 'payload', required: true },
+            outputMode: { value: 'file', required: true },
             synthesisVoice: { value: "en-US-JennyNeural", required: true },
             textFilePath: { value: '', validate: function() {
                 // If input mode is file, textFilePath is required
-                if (this.inputMode === INPUT_MODE.file) return !!this.textFilePath;
+                if (this.inputMode ==='file') return !!this.textFilePath;
                 return true;
             }},
             audioFilePath: { value: '', validate: function() {
                 // If output mode is file, audioFilePath is required
-                if (this.outputMode === OUTPUT_MODE.file) return !!this.audioFilePath;
+                if (this.outputMode === 'file') return !!this.audioFilePath;
                 return true;
             }}
         },
@@ -41,7 +31,7 @@
         oneditprepare: function() {
             $('#node-input-inputMode').on('change', function() {
                 // Hide textFilePath if input mode is payload
-                if (this.value === INPUT_MODE.payload) {
+                if (this.value === 'payload') {
                     $('#node-input-div-textFilePath').hide();
                 } else {
                     $('#node-input-div-textFilePath').show();
@@ -50,7 +40,7 @@
 
             $('#node-input-outputMode').on('change', function() {
                 // Hide audioFilePath if output mode is payload
-                if (this.value === OUTPUT_MODE.payload) {
+                if (this.value === 'payload') {
                     $('#node-input-div-audioFilePath').hide();
                 } else {
                     $('#node-input-div-audioFilePath').show();
@@ -71,16 +61,16 @@
     <div class="form-row">
         <label for="node-input-inputMode"><i class="fa fa-tag"></i> Input mode </label>
         <select name="node-input-inputMode" id="node-input-inputMode">
-            <option value="1"> file </option>
-            <option value="2"> payload </option>
+            <option value="file"> file </option>
+            <option value="payload"> payload </option>
         </select>
     </div>
 
     <div class="form-row">
         <label for="node-input-outputMode"><i class="fa fa-tag"></i> Output mode </label>
         <select name="node-input-outputMode" id="node-input-outputMode">
-            <option value="1"> file </option>
-            <option value="2"> payload </option>
+            <option value="file"> file </option>
+            <option value="payload"> payload </option>
         </select>
     </div>
 
@@ -112,38 +102,3 @@
         <input type="text" id="node-input-region" placeholder="Region">
     </div>
 </script>
-
-<!--<script type="text/html" data-help-name="Upload">-->
-<!--    <p> Upload files to Azure Blob Storage </p>-->
-
-<!--    <h3>Inputs</h3>-->
-<!--    <dl class="message-properties">-->
-<!--        <dt> msg.payload-->
-<!--            <span class="property-type"> Buffer </span>-->
-<!--        </dt>-->
-<!--        <dd>An instance of Buffer containing the content to be uploaded. Ignored if the mode is 'file'.</dd>-->
-<!--    </dl>-->
-<!--    <h3>Outputs</h3>-->
-<!--    <dl class="message-properties">-->
-<!--        <dt> msg.payload.success-->
-<!--            <span class="property-type"> boolean </span>-->
-<!--        </dt>-->
-<!--        <dd>A flog that indicates if the downloading succeeds or not.</dd>-->
-<!--        <dt> msg.payload.date-->
-<!--            <span class="property-type"> boolean </span>-->
-<!--        </dt>-->
-<!--        <dd>A date string representing when the uploading happens.</dd>-->
-<!--    </dl>-->
-
-<!--    <h3>Details</h3>-->
-<!--    <p>-->
-<!--        There are two modes for this node: file mode and binary mode.-->
-<!--    </p>-->
-<!--    <h5>'file' mode</h5>-->
-<!--    <p>In file mode, the node will try to upload the file specified in file path attribute, and rename it to the name specified in blob name attribute if given.-->
-<!--        If blob name attribute is not given, the node will use the original file name as its blob name.</p>-->
-<!--    <h5>'binary' mode</h5>-->
-<!--    <p>In binary mode, the node will accepts an instance of Buffer as <code>msg.payload</code>, and upload it with name specified in blob name attribute.-->
-<!--        blob name attribute must be given in binary mode, or an error is thrown.</p>-->
-<!--    <p>In both modes, if the container specified does not exist, the node will create it and upload the file to the newly created container.</p>-->
-<!--</script>-->

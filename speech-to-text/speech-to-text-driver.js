@@ -54,7 +54,6 @@ class SpeechToTextDriver {
         return new Promise((resolve, reject) => {
             recognizer.recognizeOnceAsync(result => {
                 const { reason, errorDetails, language, text } = result;
-                console.log(result);
                 recognizer.close();
 
                 if (reason !== sdk.ResultReason.RecognizedSpeech) reject(`SST is cancelled with ${errorDetails}`);

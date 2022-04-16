@@ -12,12 +12,12 @@ class TextToSpeechDriver {
         this.#key = key;
         this.#region = region;
         this.INPUT_MODE  = {
-            'file': '1',
-            'payload': '2',
+            file: 'file',
+            payload: 'payload',
         };
         this.OUTPUT_MODE = {
-            'file': '1',
-            'payload': '2',
+            file: 'file',
+            payload: 'payload',
         };
     }
 
@@ -32,10 +32,14 @@ class TextToSpeechDriver {
         return sdk.AudioConfig.fromAudioFileOutput(audioFilePath);
     }
 
-    createSpeechSynthesizer(outputMode, speechConfig, audioConfig) {
-        return outputMode === this.OUTPUT_MODE.file
-                ? new sdk.SpeechSynthesizer(speechConfig, audioConfig)
-                : new sdk.SpeechSynthesizer(speechConfig);
+    createSpeechSynthesizer({ outputMode, audioFilePath, synthesisVoice }) {
+        // Currently support en-US only
+        const synthesisLanguage = 'en-US';
+        const speechConfig = this.createSpeechConfig(synthesisLanguage, synthesisVoice);
+        if (outputMode === this.OUTPUT_MODE.file) {
+            const audioConfig = this.createAudioConfig(audioFilePath);
+            return new sdk.SpeechSynthesizer(speechConfig, audioConfig);
+        } else return new sdk.SpeechSynthesizer(speechConfig);
     }
 
     async performTts({ outputMode, synthesisVoice, audioFilePath, text }) {
@@ -44,17 +48,11 @@ class TextToSpeechDriver {
             if (!audioFilePath || !path.isAbsolute(audioFilePath)) throw new Error('Audio file path must be a string of an absolute path to local file system');
             if (!path.extname(audioFilePath)) throw new Error('Audio file path must contain a valid file name with extension');
         }
-        // Currently support en-US only
-        const synthesisLanguage = 'en-US';
-        const speechConfig = this.createSpeechConfig(synthesisLanguage, synthesisVoice);
-        const audioConfig = this.createAudioConfig(audioFilePath);
-        const synthesizer = this.createSpeechSynthesizer(outputMode, speechConfig, audioConfig);
-
+        const synthesizer = this.createSpeechSynthesizer({ outputMode, audioFilePath, synthesisVoice });
         return new Promise((resolve, reject) => {
             synthesizer.speakTextAsync(text, (result) => {
                 const { reason, errorDetails, audioData } = result;
                 synthesizer.close();
-
                 if (reason !== sdk.ResultReason.SynthesizingAudioCompleted) reject(`TTS is cancelled with ${errorDetails}`);
 
                 // Convert ArrayBuffer to Buffer using uint8 to interpret the ArrayBuffer
