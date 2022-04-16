@@ -1,5 +1,6 @@
 const sdk = require('microsoft-cognitiveservices-speech-sdk');
 const path = require('path');
+const fs = require('fs');
 
 class TextToSpeechDriver {
     #node;
@@ -74,7 +75,9 @@ class TextToSpeechDriver {
 
     async ttsFromFile(options) {
         if (!options.textFilePath || !path.isAbsolute(options.textFilePath)) throw new Error('Text file path must be a string of an absolute path to local file system');
-        return this.performTts(options);
+        // Read files
+        const text = fs.readFileSync(options.textFilePath, 'utf8');
+        return this.performTts({ ...options, text });
     }
 
    async run(options) {
