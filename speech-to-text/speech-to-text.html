@@ -1,0 +1,94 @@
+<script type="text/javascript">
+    RED.nodes.registerType('speech-to-text',{
+        category: 'Azure Cognitive Services',
+        color: '#88c9d3 ',
+        defaults: {
+            name: { value: ''  },
+            inputMode: { value: 'payload', required: true },
+            outputMode: { value: 'file', required: true },
+            textFilePath: { value: '', validate: function() {
+                    // If output mode is file, textFilePath is required
+                    if (this.outputMode === 'file') return !!this.textFilePath;
+                    return true;
+                }},
+            audioFilePath: { value: '', validate: function() {
+                    // If input mode is file, audioFilePath is required
+                    if (this.inputMode === 'file') return !!this.audioFilePath;
+                    return true;
+                }}
+        },
+        credentials: {
+            key: { type: 'password' },
+            region: { type: 'text' }
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function() {
+            if (this.name) return this.name;
+            return 'speech-to-text';
+        },
+        oneditprepare: function() {
+            $('#node-input-inputMode').on('change', function() {
+                // Hide audioFilePath if input mode is payload
+                if (this.value ==='payload') {
+                    $('#node-input-div-audioFilePath').hide();
+                } else {
+                    $('#node-input-div-audioFilePath').show();
+                }
+            });
+
+            $('#node-input-outputMode').on('change', function() {
+                // Hide textFilePath if output mode is payload
+                if (this.value === 'payload') {
+                    $('#node-input-div-textFilePath').hide();
+                } else {
+                    $('#node-input-div-textFilePath').show();
+                }
+            });
+        },
+        icon: 'font-awesome/fa-cloud-upload',
+    });
+</script>
+
+<script type="text/html" data-template-name="speech-to-text">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name </label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-inputMode"><i class="fa fa-tag"></i> Input mode </label>
+        <select name="node-input-inputMode" id="node-input-inputMode">
+            <option value="file"> file </option>
+            <option value="payload"> payload </option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-outputMode"><i class="fa fa-tag"></i> Output mode </label>
+        <select name="node-input-outputMode" id="node-input-outputMode">
+            <option value="file"> file </option>
+            <option value="payload"> payload </option>
+        </select>
+    </div>
+
+    <div id="node-input-div-textFilePath" class="form-row">
+        <label for="node-input-textFilePath"><i class="fa fa-tag"></i> Text file path </label>
+        <input type="text" id="node-input-textFilePath" placeholder="Must be an absolute path to local file system">
+    </div>
+
+    <div id="node-input-div-audioFilePath" class="form-row">
+        <label for="node-input-audioFilePath"><i class="fa fa-tag"></i> Audio file path </label>
+        <input type="text" id="node-input-audioFilePath" placeholder="Must be an absolute path to local file system">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-key"><i class="fa fa-tag"></i> Key </label>
+        <input type="password" id="node-input-key" placeholder="Your beautiful key">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-region"><i class="fa fa-tag"></i> Region </label>
+        <input type="text" id="node-input-region" placeholder="Region">
+    </div>
+</script>
