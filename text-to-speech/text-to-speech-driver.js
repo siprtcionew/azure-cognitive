@@ -42,12 +42,23 @@ class TextToSpeechDriver {
         } else return new sdk.SpeechSynthesizer(speechConfig);
     }
 
-    async performTts({ outputMode, synthesisVoice, audioFilePath, text }) {
+    checkInputMode({ inputMode, textFilePath, text }) {
+        if (inputMode === this.INPUT_MODE.payload ) {
+            if (!text) throw new Error('msg.payload must not be empty if input mode is "payload"');
+        } else {
+            if (!textFilePath || !path.isAbsolute(textFilePath)) throw new Error('Text file path must be a string of an absolute path to local file system');
+        }
+    }
+
+    checkOutputMode({ outputMode, audioFilePath  }) {
         // Check output mode = file restriction
         if (outputMode === this.OUTPUT_MODE.file) {
             if (!audioFilePath || !path.isAbsolute(audioFilePath)) throw new Error('Audio file path must be a string of an absolute path to local file system');
             if (!path.extname(audioFilePath)) throw new Error('Audio file path must contain a valid file name with extension');
         }
+    }
+
+    async performTtsInternal({ outputMode, synthesisVoice, audioFilePath, text }) {
         const synthesizer = this.createSpeechSynthesizer({ outputMode, audioFilePath, synthesisVoice });
         return new Promise((resolve, reject) => {
             synthesizer.speakTextAsync(text, (result) => {
@@ -66,24 +77,19 @@ class TextToSpeechDriver {
         });
     }
 
-    async ttsFromPayload(options) {
-        if (!options.text) throw new Error('msg.payload must not be empty if input mode is "payload"');
-        return this.performTts(options);
-    }
-
-    async ttsFromFile(options) {
-        if (!options.textFilePath || !path.isAbsolute(options.textFilePath)) throw new Error('Text file path must be a string of an absolute path to local file system');
-        // Read files
-        const text = fs.readFileSync(options.textFilePath, 'utf8');
-        return this.performTts({ ...options, text });
+    async performTts(options) {
+        this.checkInputMode(options);
+        this.checkOutputMode(options);
+        const finalText = options.text || fs.readFileSync(options.textFilePath, 'utf8');
+        return this.performTtsInternal({
+            ...options,
+            text: finalText,
+        });
     }
 
    async run(options) {
         try {
-            if (options.inputMode === this.INPUT_MODE.payload) {
-                return await this.ttsFromPayload(options);
-            }
-            return await this.ttsFromFile(options);
+            return await this.performTts(options);
         } catch (e) {
             throw e;
         }
