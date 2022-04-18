@@ -69,7 +69,7 @@ class SpeechToTextDriver {
                     // Write file to textFilePath
                     fs.writeFileSync(textFilePath, text);
                     resolve('STT succeeded');
-                } else resolve({ text });
+                } else resolve(text);
             }, (err) => {
                 this.#node.warn(err);
                 recognizer.close();
