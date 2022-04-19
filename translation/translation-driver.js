@@ -22,8 +22,6 @@ class TranslationDriver extends ConfigGenerator{
     createSpeechTranslationConfig(fromLanguage, toLanguages) {
         const speechTranslationConfig = sdk.SpeechTranslationConfig.fromSubscription(this.#key, this.#region);
         speechTranslationConfig.speechRecognitionLanguage = fromLanguage;
-        // speechTranslationConfig.addTargetLanguage('de');
-        // speechTranslationConfig.addTargetLanguage('ja');
         toLanguages.forEach(language => {
             speechTranslationConfig.addTargetLanguage(language);
         });
@@ -96,10 +94,11 @@ class TranslationDriver extends ConfigGenerator{
                 const resultTexts = [];
                 recognizer.close();
                 if (reason !== sdk.ResultReason.TranslatedSpeech) return reject(new Error(`TTS is cancelled with ${errorDetails}`));
-                if (!translations.languages || translations.languages.length === 0) return reject(new Error('There is no text translated, something went wrong'));
-                translations.languages.forEach(l => {
-                    const r = result.translations.get(l);
-                    resultTexts.push(r);
+                if (!translations.languages || translations.languages.length === 0) return reject(new Error('There is no translated text, something went wrong and please try again'));
+                // Get translated text
+                translations.languages.forEach(lang => {
+                    const translatedText = result.translations.get(lang);
+                    resultTexts.push({ language: lang, translatedText });
                 });
                 resolve(resultTexts);
             }, (err) => {
