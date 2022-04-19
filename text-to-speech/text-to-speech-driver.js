@@ -64,7 +64,7 @@ class TextToSpeechDriver {
             synthesizer.speakTextAsync(text, (result) => {
                 const { reason, errorDetails, audioData } = result;
                 synthesizer.close();
-                if (reason !== sdk.ResultReason.SynthesizingAudioCompleted) reject(`TTS is cancelled with ${errorDetails}`);
+                if (reason !== sdk.ResultReason.SynthesizingAudioCompleted) return reject(new Error(`TTS is cancelled with ${errorDetails}`));
 
                 // Convert ArrayBuffer to Buffer using uint8 to interpret the ArrayBuffer
                 if (outputMode === this.OUTPUT_MODE.file) resolve(`TTS succeeded`);

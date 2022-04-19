@@ -1,13 +1,15 @@
 const sdk = require('microsoft-cognitiveservices-speech-sdk');
 const path = require('path');
 const fs = require('fs');
+const ConfigGenerator = require('../utilities/Config-generator');
 
-class SpeechToTextDriver {
+class SpeechToTextDriver extends ConfigGenerator{
     #node;
     #key;
     #region;
 
     constructor(node, key, region) {
+        super();
         this.#node = node;
         this.#key = key;
         this.#region = region;
@@ -33,21 +35,9 @@ class SpeechToTextDriver {
         return sdk.SpeechConfig.fromSubscription(this.#key, this.#region);
     }
 
-    createAudioConfigFromStream(pushStream) {
-        return sdk.AudioConfig.fromStreamInput(pushStream);
-    }
-
-    createAudioConfigFromWav(audioData) {
-        // audioData is an instance of Buffer
-        return sdk.AudioConfig.fromWavFileInput(audioData);
-    }
-
     createSpeechRecognizerFromStream(audioData) {
         const speechConfig = this.createSpeechConfig();
-        const pushStream = sdk.AudioInputStream.createPushStream();
-        pushStream.write(audioData);
-        pushStream.close();
-        const audioConfig = this.createAudioConfigFromStream(pushStream);
+        const audioConfig = this.createAudioConfigFromStream(audioData);
         return new sdk.SpeechRecognizer(speechConfig, audioConfig)
     }
 
@@ -63,7 +53,7 @@ class SpeechToTextDriver {
                 const { reason, errorDetails, text } = result;
                 recognizer.close();
 
-                if (reason !== sdk.ResultReason.RecognizedSpeech) reject(`SST is cancelled with ${errorDetails}`);
+                if (reason !== sdk.ResultReason.RecognizedSpeech) return reject(new Error(`SST is cancelled with ${errorDetails}`));
 
                 if (outputMode === this.OUTPUT_MODE.file) {
                     // Write file to textFilePath

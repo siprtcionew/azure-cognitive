@@ -1,0 +1,83 @@
+<script type="text/javascript">
+    RED.nodes.registerType('translation',{
+        category: 'Azure Cognitive Services',
+        color: '#88c9d3 ',
+        defaults: {
+            name: { value: ''  },
+            inputMode: { value: 'payload', required: true },
+            fromLanguage: { value: '', required: true },
+            toLanguages: { value: '', validate: function() {
+                const l = this.toLanguages.trim();
+                // Must be a single language(en) or multiple languages separated by comma(en, de)
+                const regex = /^[a-zA-Z\-]{2,}(\s*,\s*[a-zA-Z\-]{2,})*$/;
+                return regex.test(l);
+            }},
+            audioFilePath: { value: '', validate: function() {
+                // If input mode is file, audioFilePath is required
+                if (this.inputMode === 'file') return !!this.audioFilePath;
+                return true;
+            }}
+        },
+        credentials: {
+            key: { type: 'password' },
+            region: { type: 'text' }
+        },
+        inputs: 1,
+        outputs: 1,
+        label: function() {
+            if (this.name) return this.name;
+            return 'translation';
+        },
+        oneditprepare: function() {
+            $('#node-input-inputMode').on('change', function() {
+                // Hide textFilePath if input mode is payload
+                if (this.value === 'payload') {
+                    $('#node-input-div-audioFilePath').hide();
+                } else {
+                    $('#node-input-div-audioFilePath').show();
+                }
+            });
+        },
+        icon: 'font-awesome/fa-commenting',
+    });
+</script>
+
+<script type="text/html" data-template-name="translation">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name </label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-inputMode"><i class="fa fa-tag"></i> Input mode </label>
+        <select name="node-input-inputMode" id="node-input-inputMode">
+            <option value="file"> file </option>
+            <option value="payload"> payload </option>
+        </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-fromLanguage"><i class="fa fa-tag"></i> From language </label>
+        <input type="text" id="node-input-fromLanguage" placeholder="Specify language to translate from">
+    </div>
+
+    <div id="node-input-div-toLanguages" class="form-row">
+        <label for="node-input-toLanguages"><i class="fa fa-tag"></i> To languages </label>
+        <input type="text" id="node-input-toLanguages" placeholder="Must be a comma-separated string">
+    </div>
+
+    <div id="node-input-div-audioFilePath" class="form-row">
+        <label for="node-input-audioFilePath"><i class="fa fa-tag"></i> Audio file path </label>
+        <input type="text" id="node-input-audioFilePath" placeholder="Must be an absolute path to local file system">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-key"><i class="fa fa-tag"></i> Key </label>
+        <input type="password" id="node-input-key" placeholder="Your beautiful key">
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-region"><i class="fa fa-tag"></i> Region </label>
+        <input type="text" id="node-input-region" placeholder="Region">
+    </div>
+</script>

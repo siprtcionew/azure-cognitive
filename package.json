@@ -12,7 +12,8 @@
     "version": ">=2.0.0",
     "nodes": {
       "speech-to-text": "speech-to-text/speech-to-text.js",
-      "text-to-speech": "text-to-speech/text-to-speech.js"
+      "text-to-speech": "text-to-speech/text-to-speech.js",
+      "translation": "translation/translation.js"
     }
   },
   "keywords": [
