@@ -11,7 +11,7 @@ module.exports = function(RED) {
                     audioFilePath: config.audioFilePath,
                     inputMode: config.inputMode,
                     outputMode: config.outputMode,
-                    synthesisVoice: config.synthesisVoice,
+                    synthesisVoice: config.synthesisVoice || 'en-US-JennyNeural',
                     text: msg.payload,
                 };
                 const res = await textToSpeechDriver.run(options);

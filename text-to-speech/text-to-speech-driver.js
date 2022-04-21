@@ -21,10 +21,9 @@ class TextToSpeechDriver {
         };
     }
 
-    createSpeechConfig(synthesisLanguage, synthesisVoiceName) {
+    createSpeechConfig(synthesisVoice) {
         const speechConfig = sdk.SpeechConfig.fromSubscription(this.#key, this.#region);
-        speechConfig.speechSynthesisLanguage = synthesisLanguage;
-        speechConfig.speechSynthesisVoiceName = synthesisVoiceName;
+        speechConfig.speechSynthesisVoiceName = synthesisVoice;
         return speechConfig;
     }
 
@@ -33,9 +32,7 @@ class TextToSpeechDriver {
     }
 
     createSpeechSynthesizer({ outputMode, audioFilePath, synthesisVoice }) {
-        // Currently support en-US only
-        const synthesisLanguage = 'en-US';
-        const speechConfig = this.createSpeechConfig(synthesisLanguage, synthesisVoice);
+        const speechConfig = this.createSpeechConfig(synthesisVoice);
         if (outputMode === this.OUTPUT_MODE.file) {
             const audioConfig = this.createAudioConfig(audioFilePath);
             return new sdk.SpeechSynthesizer(speechConfig, audioConfig);
@@ -50,7 +47,7 @@ class TextToSpeechDriver {
         }
     }
 
-    checkOutputMode({ outputMode, audioFilePath  }) {
+    checkOutputMode({ outputMode, audioFilePath }) {
         // Check output mode = file restriction
         if (outputMode === this.OUTPUT_MODE.file) {
             if (!audioFilePath || !path.isAbsolute(audioFilePath)) throw new Error('Audio file path must be a string of an absolute path to local file system');

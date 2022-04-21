@@ -5,7 +5,12 @@
         defaults: {
             name: { value: ''  },
             inputMode: { value: 'payload', required: true },
-            fromLanguage: { value: '', required: true },
+            fromLanguage: { value: '', validate: function() {
+                const l = this.fromLanguage.trim();
+                // Must be a single language(en) or multiple languages separated by comma(en, de)
+                const regex = /^[a-zA-Z\-]{2,}$/;
+                return regex.test(l);
+            }},
             toLanguages: { value: '', validate: function() {
                 const l = this.toLanguages.trim();
                 // Must be a single language(en) or multiple languages separated by comma(en, de)
