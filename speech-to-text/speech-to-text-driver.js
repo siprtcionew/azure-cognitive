@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const ConfigGenerator = require('../utilities/Config-generator');
 
-class SpeechToTextDriver extends ConfigGenerator{
+class SpeechToTextDriver extends ConfigGenerator {
     #node;
     #key;
     #region;
@@ -31,18 +31,20 @@ class SpeechToTextDriver extends ConfigGenerator{
         }
     }
 
-    createSpeechConfig() {
-        return sdk.SpeechConfig.fromSubscription(this.#key, this.#region);
+    createSpeechConfig(fromLanguage) {
+        const speechConfig = sdk.SpeechConfig.fromSubscription(this.#key, this.#region);
+        speechConfig.speechRecognitionLanguage = fromLanguage;
+        return speechConfig;
     }
 
-    createSpeechRecognizerFromStream(audioData) {
-        const speechConfig = this.createSpeechConfig();
+    createSpeechRecognizerFromStream(audioData, fromLanguage) {
+        const speechConfig = this.createSpeechConfig(fromLanguage);
         const audioConfig = this.createAudioConfigFromStream(audioData);
         return new sdk.SpeechRecognizer(speechConfig, audioConfig)
     }
 
-    createSpeechRecognizerFromWav(audioData) {
-        const speechConfig = this.createSpeechConfig();
+    createSpeechRecognizerFromWav(audioData, fromLanguage) {
+        const speechConfig = this.createSpeechConfig(fromLanguage);
         const audioConfig = this.createAudioConfigFromWav(audioData);
         return new sdk.SpeechRecognizer(speechConfig, audioConfig);
     }
@@ -75,7 +77,7 @@ class SpeechToTextDriver extends ConfigGenerator{
         // Check binary format
         if (!(formattedAudioData instanceof ArrayBuffer) && !(formattedAudioData instanceof Buffer)) throw new Error('msg.payload must be an instance of either ArrayBuffer or Buffer(NodeJS) class');
 
-        const recognizer = this.createSpeechRecognizerFromStream(formattedAudioData);
+        const recognizer = this.createSpeechRecognizerFromStream(formattedAudioData, options.fromLanguage);
         return this.performStt({ ...options, recognizer });
     }
 
@@ -85,7 +87,7 @@ class SpeechToTextDriver extends ConfigGenerator{
         // Read files as Buffer
         const audioData = fs.readFileSync(options.audioFilePath);
         if (audioData.length === 0) throw new Error('The audio file provided is empty, recognition aborted');
-        const recognizer = this.createSpeechRecognizerFromWav(audioData);
+        const recognizer = this.createSpeechRecognizerFromWav(audioData, options.fromLanguage);
         return this.performStt({ ...options, recognizer });
     }
 

@@ -11,6 +11,7 @@ module.exports = function(RED) {
                     audioFilePath: config.audioFilePath,
                     inputMode: config.inputMode,
                     outputMode: config.outputMode,
+                    fromLanguage: config.fromLanguage || 'en-US',
                     audioData: msg.payload,
                 };
                 const res = await speechToTextDriver.run(options);

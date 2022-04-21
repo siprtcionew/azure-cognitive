@@ -6,6 +6,7 @@
             name: { value: ''  },
             inputMode: { value: 'payload', required: true },
             outputMode: { value: 'file', required: true },
+            fromLanguage: { value: '' },
             textFilePath: { value: '', validate: function() {
                     // If output mode is file, textFilePath is required
                     if (this.outputMode === 'file') return !!this.textFilePath;
@@ -70,6 +71,11 @@
             <option value="file"> file </option>
             <option value="payload"> payload </option>
         </select>
+    </div>
+
+    <div class="form-row">
+        <label for="node-input-fromLanguage"><i class="fa fa-tag"></i> From language </label>
+        <input type="text" id="node-input-fromLanguage" placeholder="The language used in the speech, default to en-US">
     </div>
 
     <div id="node-input-div-textFilePath" class="form-row">
