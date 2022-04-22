@@ -31,12 +31,9 @@ class TextToSpeechDriver {
         return sdk.AudioConfig.fromAudioFileOutput(audioFilePath);
     }
 
-    createSpeechSynthesizer({ outputMode, audioFilePath, synthesisVoice }) {
+    createSpeechSynthesizer(synthesisVoice) {
         const speechConfig = this.createSpeechConfig(synthesisVoice);
-        if (outputMode === this.OUTPUT_MODE.file) {
-            const audioConfig = this.createAudioConfig(audioFilePath);
-            return new sdk.SpeechSynthesizer(speechConfig, audioConfig);
-        } else return new sdk.SpeechSynthesizer(speechConfig);
+        return new sdk.SpeechSynthesizer(speechConfig);
     }
 
     checkInputMode({ inputMode, textFilePath, text }) {
@@ -56,15 +53,20 @@ class TextToSpeechDriver {
     }
 
     async performTtsInternal({ outputMode, synthesisVoice, audioFilePath, text }) {
-        const synthesizer = this.createSpeechSynthesizer({ outputMode, audioFilePath, synthesisVoice });
+        const synthesizer = this.createSpeechSynthesizer(synthesisVoice);
         return new Promise((resolve, reject) => {
             synthesizer.speakTextAsync(text, (result) => {
                 const { reason, errorDetails, audioData } = result;
                 if (reason !== sdk.ResultReason.SynthesizingAudioCompleted) return reject(new Error(`TTS is cancelled with ${errorDetails}`));
                 synthesizer.close();
+
                 // Convert ArrayBuffer to Buffer using uint8 to interpret the ArrayBuffer
                 const buf = Buffer.from(new Uint8Array(audioData));
+
                 if (outputMode === this.OUTPUT_MODE.file) {
+                    // Manually write binary content to file to prevent race condition
+                    // If a speech-to-text node is connected and use the same file
+                    // speech-to-text node will have error because ms built-in hasn't finished writing
                     fs.writeFileSync(audioFilePath, buf);
                     resolve(`TTS succeeded`);
                 }
