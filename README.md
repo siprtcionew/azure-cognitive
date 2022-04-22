@@ -8,14 +8,15 @@ The example flow is as follows:
 
 ![Example flow](https://github.com/uwtintres/azure-cognitive/blob/main/img/example-flow.png?raw=true)
 
-In this example, Inject node injects a string of Japanese "みんなで行きましょう。" to text-to-speech node. The text-to-speech node will convert it to English and send the speech
-binary content to three nodes: an audio out node from **node-red-ui**, speech-to-text and translation node.
+In this example, Inject node injects a string of Japanese "みんなで行きましょう。" to text-to-speech node. The text-to-speech node will convert it to speech
+binary content and send it to three nodes: an audio out node from **node-red-ui**, speech-to-text and translation node.
 
 #### Config of text-to-speech node
 ![text-to-speech](https://github.com/uwtintres/azure-cognitive/blob/main/img/text-to-speech.png?raw=true)
 
 The node accepts the text to be converted to speech by `msg.payload` when **input mode** is set to **payload**. For the list of supported synthesis voice, please check the official [supported languages and voices](https://docs.microsoft.com/en-us/azure/cognitive-services/speech-service/language-support?tabs=speechtotext#text-to-speech)
-for more information. In this example, ja-JP-NanamiNeural is used. Note that mistyping voice name could lead to uncertain errors(check the bottom section).
+for more information. In this example, ja-JP-NanamiNeural is used. The node outputs the binary content of recognized speech as `msg.paylad` and send it to nodes after.
+Note that mistyping voice name could lead to uncertain errors(check the bottom section).
 
 #### Config of speech-to-text node
 ![speech-to-text](https://github.com/uwtintres/azure-cognitive/blob/main/img/speech-to-text.png?raw=true)
@@ -27,4 +28,18 @@ in the beginning.
 #### Config of translation node
 ![translation](https://github.com/uwtintres/azure-cognitive/blob/main/img/translation.png?raw=true)
 
-The translation node accepts a speech binary content as 
+The translation node accepts a speech binary content by `msg.payload`. It uses **From language** specified to translate the given speech content to text in languages specified in **To languages**. **To languages** can be
+a single language or multiple languages separated by commas. The node will output translated texts as an array by `msg.payload`.
+
+For this example, translate node outputs following translated texts(in en-US and zh-Hant) from the "みんなで行きましょう。" speech content, which is sent from text-to-speech node.
+
+![translation-output](https://github.com/uwtintres/azure-cognitive/blob/main/img/translation-output.png?raw=true)
+
+
+## Potential Errors
+In some services, the following error might occur due to language config error:
+
+![Language errors](https://github.com/uwtintres/azure-cognitive/blob/main/img/language-error.png?raw=true)
+
+The error occurs mostly because MS cognitive services failed to recognize the language options we provide. For example, if we change **From language** in speech-to-text node from **ja-JP** to only **ja**, the services will fail to
+recognize the language and hence return this error. The general rule of thumb is that the locale part of the language should always be provided, i.e. using **lang-locale** format like **en-US**, **ja-JP** instead of only **en**, **ja**.
