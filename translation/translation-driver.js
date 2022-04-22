@@ -59,6 +59,11 @@ class TranslationDriver extends ConfigGenerator{
         if (!toLanguagesRegex.test(toLanguages)) throw new Error('To languages field must be a string of single or multiple languages separated by comma,' +
             'ex. en-US or en-US,de-DE');
 
+        // trim the language string, spaces will cause errors
+        for (let i = 0; i < toLanguages.length; i++) {
+            toLanguages[i] = toLanguages[i].trim();
+        }
+
         return [fromLanguage, toLanguages];
     }
 
