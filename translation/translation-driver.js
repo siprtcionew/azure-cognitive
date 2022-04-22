@@ -1,7 +1,7 @@
 const sdk = require('microsoft-cognitiveservices-speech-sdk');
 const path = require('path');
 const fs = require('fs');
-const ConfigGenerator = require('../utilities/Config-generator');
+const ConfigGenerator = require('../utilities/config-generator');
 
 class TranslationDriver extends ConfigGenerator{
     #node;

@@ -6,7 +6,12 @@
             name: { value: ''  },
             inputMode: { value: 'payload', required: true },
             outputMode: { value: 'file', required: true },
-            fromLanguage: { value: '' },
+            fromLanguage: { value: '', validate: function() {
+                    const l = this.fromLanguage.trim();
+                    // Must be a single language(en) or multiple languages separated by comma(en, de)
+                    const regex = /^[a-zA-Z\-]{2,}$/;
+                    return regex.test(l);
+            }},
             textFilePath: { value: '', validate: function() {
                     // If output mode is file, textFilePath is required
                     if (this.outputMode === 'file') return !!this.textFilePath;
