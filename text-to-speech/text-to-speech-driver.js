@@ -60,12 +60,15 @@ class TextToSpeechDriver {
         return new Promise((resolve, reject) => {
             synthesizer.speakTextAsync(text, (result) => {
                 const { reason, errorDetails, audioData } = result;
-                synthesizer.close();
                 if (reason !== sdk.ResultReason.SynthesizingAudioCompleted) return reject(new Error(`TTS is cancelled with ${errorDetails}`));
-
+                synthesizer.close();
                 // Convert ArrayBuffer to Buffer using uint8 to interpret the ArrayBuffer
-                if (outputMode === this.OUTPUT_MODE.file) resolve(`TTS succeeded`);
-                else resolve(Buffer.from(new Uint8Array(audioData)));
+                const buf = Buffer.from(new Uint8Array(audioData));
+                if (outputMode === this.OUTPUT_MODE.file) {
+                    fs.writeFileSync(audioFilePath, buf);
+                    resolve(`TTS succeeded`);
+                }
+                else resolve(buf);
             }, (err) => {
                 this.#node.warn(err);
                 synthesizer.close();
