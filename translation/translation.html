@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('translation',{
         category: 'Azure Cognitive Services',
-        color: '#88c9d3 ',
+        color: '#008AD7',
         defaults: {
             name: { value: ''  },
             inputMode: { value: 'payload', required: true },
@@ -85,4 +85,38 @@
         <label for="node-input-region"><i class="fa fa-tag"></i> Region </label>
         <input type="text" id="node-input-region" placeholder="Region">
     </div>
+</script>
+
+<script type="text/html" data-help-name="translation">
+    <p> Speech translation of Microsoft Cognitive Services </p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt> msg.payload
+            <span class="property-type"> Buffer | string </span>
+        </dt>
+        <dd>
+            If the mode is 'file', this field should be a string of an absolute path where the WAV file to be translated is.
+            If the mode is 'payload', this field should be a Buffer class instance containing the speech binary content to be translated.
+        </dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt> msg.payload
+            <span class="property-type"> array </span>
+        </dt>
+        <dd>
+            An array of translated text and the code of the language used in translation. Each array element is an object of <code>{ language, translatedText }</code>.
+        </dd>
+    </dl>
+    <h3>Details</h3>
+    <p>
+        There are two input modes for this node: file mode and payload mode.
+    </p>
+    <h5> 'file' mode </h5>
+    <p> In file mode, the node will try to read speech binary content to be translated from the file path given.
+    </p>
+    <h5> 'payload' mode </h5>
+    <p> In payload mode, the node will try to read speech binary content to be translated from <code>msg.payload</code>. </p>
+
+    <p> Note that To languages field must be a single language or multiple languages separated by commas. </p>
 </script>

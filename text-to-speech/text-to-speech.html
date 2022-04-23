@@ -1,7 +1,7 @@
 <script type="text/javascript">
     RED.nodes.registerType('text-to-speech',{
         category: 'Azure Cognitive Services',
-        color: '#88c9d3 ',
+        color: '#008AD7',
         defaults: {
             name: { value: ''  },
             inputMode: { value: 'payload', required: true },
@@ -98,4 +98,38 @@
         <label for="node-input-region"><i class="fa fa-tag"></i> Region </label>
         <input type="text" id="node-input-region" placeholder="Region">
     </div>
+</script>
+
+<script type="text/html" data-help-name="text-to-speech">
+    <p> Text to speech service of Microsoft Cognitive Services </p>
+    <h3>Inputs</h3>
+    <dl class="message-properties">
+        <dt> msg.payload
+            <span class="property-type"> string </span>
+        </dt>
+        <dd>
+            If the mode is 'file', this field should be a string of an absolute path where the text file to be converted is.
+            If the mode is 'payload', this field should be a string to be converted.
+        </dd>
+    </dl>
+    <h3>Outputs</h3>
+    <dl class="message-properties">
+        <dt> msg.payload
+            <span class="property-type"> Buffer | string </span>
+        </dt>
+        <dd>
+            If the mode is 'file', this field would be just a string indicating if the operation succeeds or not.
+            If the mode is 'payload', this field would be an instance of Buffer class containing the speech binary content.
+        </dd>
+    </dl>
+    <h3>Details</h3>
+    <p>
+        There are two modes for this node: file mode and payload mode.
+    </p>
+    <h5> 'file' mode </h5>
+    <p>
+        For input, the node will try to read the text from the file path given. For output, the node will try to read speech binary content from the file path given.
+    </p>
+    <h5> 'payload' mode </h5>
+    <p> For input, the node will try to read the text from <code>msg.payload</code>. For output, the node will send the converted speech binary content by <code>msg.payload</code>.</p>
 </script>
