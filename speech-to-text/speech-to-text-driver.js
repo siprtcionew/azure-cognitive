@@ -52,10 +52,9 @@ class SpeechToTextDriver extends ConfigGenerator {
     async performStt({ outputMode, textFilePath, recognizer }) {
         return new Promise((resolve, reject) => {
             recognizer.recognizeOnceAsync(result => {
-                const { reason, errorDetails, text } = result;
+                const { reason, text } = result;
                 recognizer.close();
-
-                if (reason !== sdk.ResultReason.RecognizedSpeech) return reject(new Error(`SST is cancelled with ${errorDetails}`));
+                if (reason !== sdk.ResultReason.RecognizedSpeech) return reject(new Error(`SST is cancelled with ${sdk.ResultReason[reason]}`));
 
                 if (outputMode === this.OUTPUT_MODE.file) {
                     // Write file to textFilePath
