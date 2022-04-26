@@ -25,7 +25,7 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("translation", translation, {
+    RED.nodes.registerType("ms-translation", translation, {
         credentials: {
             key: { type: 'password' },
             region: { type: 'text' }

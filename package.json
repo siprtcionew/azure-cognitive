@@ -8,9 +8,9 @@
   "node-red": {
     "version": ">=2.0.0",
     "nodes": {
-      "speech-to-text": "speech-to-text/speech-to-text.js",
-      "text-to-speech": "text-to-speech/text-to-speech.js",
-      "translation": "translation/translation.js"
+      "ms-speech-to-text": "speech-to-text/speech-to-text.js",
+      "ms-text-to-speech": "text-to-speech/text-to-speech.js",
+      "ms-translation": "translation/translation.js"
     }
   },
   "keywords": [
@@ -28,6 +28,6 @@
   },
   "homepage": "https://github.com/uwtintres/azure-cognitive",
   "dependencies": {
-    "microsoft-cognitiveservices-speech-sdk": "^1.20.0"
+    "microsoft-cognitiveservices-speech-sdk": "^1.21.0"
   }
 }

@@ -25,7 +25,7 @@ module.exports = function(RED) {
         });
     }
 
-    RED.nodes.registerType("text-to-speech", textToSpeech, {
+    RED.nodes.registerType("ms-text-to-speech", textToSpeech, {
         credentials: {
             key: { type: 'password' },
             region: { type: 'text' }

@@ -1,5 +1,5 @@
 <script type="text/javascript">
-    RED.nodes.registerType('text-to-speech',{
+    RED.nodes.registerType('ms-text-to-speech',{
         category: 'Azure Cognitive Services',
         color: '#008AD7',
         defaults: {
@@ -26,7 +26,7 @@
         outputs: 1,
         label: function() {
             if (this.name) return this.name;
-            return 'text-to-speech';
+            return 'ms-text-to-speech';
         },
         oneditprepare: function() {
             $('#node-input-inputMode').on('change', function() {
@@ -52,7 +52,7 @@
     });
 </script>
 
-<script type="text/html" data-template-name="text-to-speech">
+<script type="text/html" data-template-name="ms-text-to-speech">
     <div class="form-row">
         <label for="node-input-name"><i class="fa fa-tag"></i> Name </label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -100,7 +100,7 @@
     </div>
 </script>
 
-<script type="text/html" data-help-name="text-to-speech">
+<script type="text/html" data-help-name="ms-text-to-speech">
     <p> Text to speech service of Microsoft Cognitive Services </p>
     <h3>Inputs</h3>
     <dl class="message-properties">
