@@ -1,9 +1,14 @@
 # azure-cognitive
 ## Introduction
 **azure-cognitive** is a collection of nodes that perform text-to-speech(tts), speech-to-text(stt), speech translation from [Microsoft Azure Cognitive Services](https://azure.microsoft.com/en-us/services/cognitive-services/#api).
-## Installation
+### Installation
 `npm install @intres/azure-cognitive`
-## Example usage (combinations of text-to-speech, speech-to-text and speech translation)
+
+### About us
+The [Internet of Things Research (INTRES) Group](https://github.com/UWTINTRES)
+at the University of Washington Tacoma (UWT) developed and maintains this package to promote Internet of Things (IoT) research and teaching. This package seeks to accelerate the adoption of IoT concepts by developing a simple mechanism to increase the productivity of researchers, software engineers, developers, and data scientists.
+
+### Example usage (combinations of text-to-speech, speech-to-text and speech translation)
 The example flow is as follows:
 
 ![Example flow](https://github.com/uwtintres/azure-cognitive/blob/main/img/example-flow.png?raw=true)
@@ -43,3 +48,6 @@ In some services, the following error might occur due to language config error:
 
 The error occurs mostly because MS cognitive services failed to recognize the language options we provide. For example, if we change **From language** in speech-to-text node from **ja-JP** to only **ja**, the services will fail to
 recognize the language and hence return this error. The general rule of thumb is that the locale part of the language should always be provided, i.e. using **lang-locale** format like **en-US**, **ja-JP** instead of only **en**, **ja**.
+
+#### Disclaimer
+INTRES and UWT are not responsible for the usage or utilization of these packages. They are meant to promote IoT research and education. IoT service providers may require additional verification steps to utilize the features outlined in these packages. We are not in any way responsible for the misuse of these packages. For more details on the service agreement and terms, please click [here](https://azure.microsoft.com/en-us/support/legal/).
